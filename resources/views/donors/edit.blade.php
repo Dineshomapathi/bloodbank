@@ -1,68 +1,89 @@
-<x-form-section submit="updateDonor">
-    <x-slot name="title">
-        {{ __('Edit Donor') }}
+<!-- resources/views/donors/edit.blade.php -->
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Edit Donor') }}
+        </h2>
     </x-slot>
 
-    <x-slot name="description">
-        {{ __('Update the donor details below.') }}
-    </x-slot>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+                <form action="{{ route('donors.update', $donor->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-4">
+                        <label for="user_id" class="block text-gray-700 text-sm font-bold mb-2">User:</label>
+                        <select id="user_id" name="user_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}" {{ $user->id == $donor->user_id ? 'selected' : '' }}>
+                                    {{ $user->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="user_id" class="mt-2" />
+                    </div>
 
-    <x-slot name="form">
-        <!-- Assuming you have pre-loaded the donor data using a controller -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="user_id" value="{{ __('User') }}" />
-            <select id="user_id" name="user_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                <!-- Populate with user data, marking the selected user -->
-                @foreach ($users as $user)
-                    <option value="{{ $user->id }}" {{ $user->id == $donor->user_id ? 'selected' : '' }}>
-                        {{ $user->name }}
-                    </option>
-                @endforeach
-            </select>
-            <x-input-error for="user_id" class="mt-2" />
+                    <div class="mb-4">
+                        <label for="hospital_id" class="block text-gray-700 text-sm font-bold mb-2">Hospital:</label>
+                        <select id="hospital_id" name="hospital_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            @foreach ($hospitals as $hospital)
+                                <option value="{{ $hospital->id }}" {{ $hospital->id == $donor->hospital_id ? 'selected' : '' }}>
+                                    {{ $hospital->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="hospital_id" class="mt-2" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="blood_group" class="block text-gray-700 text-sm font-bold mb-2">Blood Group:</label>
+                        <select name="blood_group" id="blood_group" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            @foreach (['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as $group)
+                                <option value="{{ $group }}" {{ $group == $donor->blood_group ? 'selected' : '' }}>{{ $group }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error for="blood_group" class="mt-2" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="age" class="block text-gray-700 text-sm font-bold mb-2">Age:</label>
+                        <input type="number" name="age" id="age" value="{{ old('age', $donor->age) }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <x-input-error for="age" class="mt-2" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="gender" class="block text-gray-700 text-sm font-bold mb-2">Gender:</label>
+                        <select name="gender" id="gender" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="Male" {{ $donor->gender == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ $donor->gender == 'Female' ? 'selected' : '' }}>Female</option>
+                            <option value="Other" {{ $donor->gender == 'Other' ? 'selected' : '' }}>Other</option>
+                        </select>
+                        <x-input-error for="gender" class="mt-2" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="phone_number" class="block text-gray-700 text-sm font-bold mb-2">Phone Number:</label>
+                        <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number', $donor->phone_number) }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <x-input-error for="phone_number" class="mt-2" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="last_donation_date" class="block text-gray-700 text-sm font-bold mb-2">Last Donation Date:</label>
+                        <input type="date" name="last_donation_date" id="last_donation_date" value="{{ old('last_donation_date', $donor->last_donation_date) }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <x-input-error for="last_donation_date" class="mt-2" />
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            {{ __('Update') }}
+                        </button>
+                        <a href="{{ route('donors.index') }}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                            {{ __('Back to List') }}
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
-        
-        <div class="col-span-6 sm:col-span-4 mt-4">
-            <x-label for="blood_group" value="{{ __('Blood Group') }}" />
-            <select id="blood_group" name="blood_group" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                <option value="A+" {{ $donor->blood_group == 'A+' ? 'selected' : '' }}>A+</option>
-                <option value="A-" {{ $donor->blood_group == 'A-' ? 'selected' : '' }}>A-</option>
-                <option value="B+" {{ $donor->blood_group == 'B+' ? 'selected' : '' }}>B+</option>
-                <option value="B-" {{ $donor->blood_group == 'B-' ? 'selected' : '' }}>B-</option>
-                <option value="AB+" {{ $donor->blood_group == 'AB+' ? 'selected' : '' }}>AB+</option>
-                <option value="AB-" {{ $donor->blood_group == 'AB-' ? 'selected' : '' }}>AB-</option>
-                <option value="O+" {{ $donor->blood_group == 'O+' ? 'selected' : '' }}>O+</option>
-                <option value="O-" {{ $donor->blood_group == 'O-' ? 'selected' : '' }}>O-</option>
-            </select>
-            <x-input-error for="blood_group" class="mt-2" />
-        </div>
-
-        <div class="col-span-6 sm:col-span-4 mt-4">
-            <x-label for="age" value="{{ __('Age') }}" />
-            <x-input id="age" type="number" class="mt-1 block w-full" name="age" value="{{ old('age', $donor->age) }}" />
-            <x-input-error for="age" class="mt-2" />
-        </div>
-
-        <div class="col-span-6 sm:col-span-4 mt-4">
-            <x-label for="phone_number" value="{{ __('Phone Number') }}" />
-            <x-input id="phone_number" type="text" class="mt-1 block w-full" name="phone_number" value="{{ old('phone_number', $donor->phone_number) }}" />
-            <x-input-error for="phone_number" class="mt-2" />
-        </div>
-
-        <div class="col-span-6 sm:col-span-4 mt-4">
-            <x-label for="last_donation_date" value="{{ __('Last Donation Date') }}" />
-            <x-input id="last_donation_date" type="date" class="mt-1 block w-full" name="last_donation_date" value="{{ old('last_donation_date', $donor->last_donation_date) }}" />
-            <x-input-error for="last_donation_date" class="mt-2" />
-        </div>
-    </x-slot>
-
-    <x-slot name="actions">
-        <x-action-message class="me-3 text-green-600" on="saved">
-            {{ __('Saved.') }}
-        </x-action-message>
-
-        <x-button>
-            {{ __('Update') }}
-        </x-button>
-    </x-slot>
-</x-form-section>
+    </div>
+</x-app-layout>

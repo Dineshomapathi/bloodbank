@@ -9,7 +9,7 @@ use App\Http\Controllers\BloodRequestController;
 use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/register');
 });
 
 Route::middleware([
